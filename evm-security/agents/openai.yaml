@@ -1,0 +1,4 @@
+interface:
+  display_name: "EVM Security"
+  short_description: "Audit and harden EVM smart contracts"
+  default_prompt: "Use $evm-security to assess these Solidity contracts for vulnerabilities and prioritize fixes."
