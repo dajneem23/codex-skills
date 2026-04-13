@@ -16,6 +16,7 @@ Curated collection of reusable agent skills and supporting references for securi
 - proxy-upgrade-safety — proxy upgrade patterns and collision checks
 - reentrancy-pattern-analysis — reentrancy variants and case studies
 - security-best-practices — language/framework security quickstarts
+- security-bug-bounty — workflow for preparing and submitting bug bounty reports
 - security-ownership-map — ownership graph tooling
 - security-threat-model — prompt-driven threat modeling templates
 - semantic-guard-analysis — semantic guardrails and detection examples
@@ -24,6 +25,8 @@ Curated collection of reusable agent skills and supporting references for securi
 
 ## Findings Library
 The findings library in findings/ stores JSONL records plus auto-generated indexes. Common tasks:
+
+Current total findings in [findings/findings.jsonl](findings/findings.jsonl): 5.
 
 ```sh
 # query records by tags/keywords

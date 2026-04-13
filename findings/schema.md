@@ -18,6 +18,7 @@ Recommended:
 - `source` (object): `{ "type": "competition|internal", "link": "https://...", "date": "2024-12-09" }`.
 - `related_ids` (array of strings): Cross-reference similar findings.
 - `test_recommendation` (string): Brief regression test idea.
+- `references` (array of strings): Repo-relative paths or URLs to supporting material (full reports, PoCs, CVEs, long-form writeups). Use to point to multiple files when one link is insufficient.
 
 Optional:
 - `poc` (string): Short PoC steps or gist link.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "External Source Finder"
+  short_description: "Find exploit references to strengthen audit reports"
+  default_prompt: "Collect high-quality external docs and exploit precedents for each finding, then output citation-ready references grouped by finding."

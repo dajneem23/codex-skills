@@ -1,0 +1,12 @@
+[submodule "openzeppelin-skills"]
+	path = openzeppelin-skills
+	url = https://github.com/OpenZeppelin/openzeppelin-skills
+[submodule "skills"]
+	path = skills
+	url = https://github.com/trailofbits/skills
+[submodule "pashov-skills"]
+	path = pashov-skills
+	url = https://github.com/pashov/skills
+[submodule "slowmist-agent-security"]
+	path = slowmist-agent-security
+	url = https://github.com/slowmist/slowmist-agent-security

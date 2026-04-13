@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build a lightweight JSONL index over PDF audit reports in /Users/tranthanh/Dev/Security/web3-audit/audit-reports.
+Build a lightweight JSONL index over PDF audit reports.
 
 Dependencies: pip install pypdf
 
@@ -11,7 +11,7 @@ Output: competition-style entries in pdf_index.jsonl with minimal fields:
 - category: pdf-index
 - root_cause/attack_path/impact/mitigation: empty (not summarized)
 - text_excerpt: first 800 chars of extracted text (for quick keyword search)
-- source: {type: "pdf", path: relative path}
+- source: {type: "pdf", path: <base-name>/<relative-path>}
 
 Note: This does not OCR scanned PDFs. For scanned docs, run OCR beforehand.
 """
@@ -22,9 +22,14 @@ import re
 from pathlib import Path
 from typing import Optional
 
+import argparse
+
 from pypdf import PdfReader
 
-BASE = Path("/Users/tranthanh/Dev/Security/web3-audit/audit-reports")
+DEFAULT_BASES = [
+    Path("/Users/tranthanh/Dev/Security/web3-audit/audit-reports"),
+    Path("/Users/tranthanh/Dev/Security/web3-audit/mixbytes"),
+]
 OUT = Path(__file__).resolve().parent.parent / "pdf_index.jsonl"
 
 SEV_MAP = {
@@ -65,31 +70,44 @@ def extract_text(pdf_path: Path) -> str:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Build PDF index for audit reports")
+    parser.add_argument("--base", nargs="*", default=[], help="Base directories containing PDFs")
+    parser.add_argument("--out", default=str(OUT), help="Output JSONL path")
+    args = parser.parse_args()
+
+    bases = [Path(p) for p in args.base] if args.base else DEFAULT_BASES
+    out_path = Path(args.out)
+
     records = []
-    for path in BASE.rglob("*.pdf"):
-        rel = path.relative_to(BASE)
-        name = path.stem
-        sev = normalize_severity(path.name)
-        rid = hashlib.sha1(str(rel).encode()).hexdigest()[:12].upper()
-        text = extract_text(path)
-        excerpt = text[:800] if text else ""
-        records.append({
-            "id": f"PDF-{rid}",
-            "title": name,
-            "severity": sev,
-            "category": "pdf-index",
-            "root_cause": "See source PDF for details (not summarized).",
-            "attack_path": "",
-            "impact": "",
-            "mitigation": "",
-            "text_excerpt": excerpt,
-            "tags": [sev.lower(), "pdf", "index"],
-            "source": {"type": "pdf", "path": str(rel)},
-        })
-    with open(OUT, "w", encoding="utf-8") as f:
+    for base in bases:
+        if not base.exists():
+            print(f"[skip] {base} does not exist")
+            continue
+        for path in base.rglob("*.pdf"):
+            rel = path.relative_to(base)
+            name = path.stem
+            sev = normalize_severity(path.name)
+            source_rel = Path(base.name) / rel
+            rid = hashlib.sha1(str(source_rel).encode()).hexdigest()[:12].upper()
+            text = extract_text(path)
+            excerpt = text[:800] if text else ""
+            records.append({
+                "id": f"PDF-{rid}",
+                "title": name,
+                "severity": sev,
+                "category": "pdf-index",
+                "root_cause": "See source PDF for details (not summarized).",
+                "attack_path": "",
+                "impact": "",
+                "mitigation": "",
+                "text_excerpt": excerpt,
+                "tags": [sev.lower(), "pdf", "index"],
+                "source": {"type": "pdf", "path": str(source_rel)},
+            })
+    with open(out_path, "w", encoding="utf-8") as f:
         for rec in records:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
-    print(f"Wrote {len(records)} records to {OUT}")
+    print(f"Wrote {len(records)} records to {out_path}")
 
 
 if __name__ == "__main__":
